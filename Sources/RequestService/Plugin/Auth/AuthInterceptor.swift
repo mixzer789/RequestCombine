@@ -33,6 +33,8 @@ final class AuthInterceptor: AuthAdapter {
         completion(.success(urlRequest))
     }
 
+
+
     func retry(_ request: Request, for session: Session, dueTo error: Error, completion: @escaping (RetryResult) -> Void) {
         guard let response = request.task?.response as? HTTPURLResponse, response.statusCode == 401
         else {
@@ -52,4 +54,6 @@ final class AuthInterceptor: AuthAdapter {
         }
         .store(in: &cancellables)
     }
+
+    
 }
