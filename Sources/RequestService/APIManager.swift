@@ -12,58 +12,47 @@ import CombineMoya
 
 public struct APIManager{
 
-    public init(){}
+    public init(){
+    }
 
     static var cancelable = Set<AnyCancellable>()
 
-    public static func request<T: Codable>(_ router: NetworkRouter) -> AnyPublisher<T , Error>{
-        Future<T, Error> {promise in
+    public static func request<T: Codable>(_ router: NetworkRouter,_ provider: MoyaProvider<NetworkRouter>? = nil) -> AnyPublisher<T , AppError>{
+        Future<T, AppError> {promise in
+            var requestProvider: MoyaProvider<NetworkRouter>!
             let apis = router
-            let provider = MoyaProvider<NetworkRouter>( plugins: [
-                VerbosePlugin(verbose: true)
-            ])
-            provider.requestPublisher(apis)
+            if let _provider = provider {
+                requestProvider = _provider
+            }else {
+                requestProvider = MoyaProvider<NetworkRouter>(session: Session(interceptor: AuthInterceptor.shared),
+                                                              plugins: [VerbosePlugin(verbose: true)])
+            }
+            requestProvider.requestPublisher(apis)
                 .sink(receiveCompletion: { completion in
                     switch completion{
                         case .finished:
                             print("RECEIVE VALUE COMPLETED")
-                        case .failure:
+                        case .failure(let error):
                             print("RECEIVE VALUE FAILED")
+                            promise(.failure(.init(error:error)))
                     }
                 }, receiveValue: { response in
-                    guard let  result = try? JSONDecoder().decode(BaseRespone<T>.self, from: response.data) else {return}
-                    guard let data = result.data else {return}
+                    guard let  result = try? JSONDecoder().decode(BaseRespone<T>.self, from: response.data),
+                          let data = result.data else {
+                        promise(.failure(.init(type: .undecode)))
+                        return
+                    }
                     promise(.success(data))
                 })
                 .store(in: &cancelable)
 
-        }.eraseToAnyPublisher()
-    }
-}
-
-
-
-
-struct VerbosePlugin: PluginType {
-    let verbose: Bool
-    func prepare(_ request: URLRequest, target: TargetType) -> URLRequest {
-#if DEBUG
-        NetworkLogger.log(request: request)
-#endif
-        return request
-    }
-
-    func didReceive(_ result: Result<Response, MoyaError>, target: TargetType) {
-#if DEBUG
-        switch result {
-            case .success(let body):
-                if verbose {
-                    NetworkLogger.log(response:body.response, data: body)
-                }
-            case .failure( _):
-                break
         }
-#endif
-    }
+        .retry(3)
+        .eraseToAnyPublisher()
 
+    }
 }
+
+
+
+

@@ -14,14 +14,21 @@ public class NetworkRouter: TargetType {
     public var method: Moya.Method
     public var task: Moya.Task
     public var headers: [String : String]?
-
+    public var sampleData: Data
+    
+    public var validationType: ValidationType {
+        return .successAndRedirectCodes
+    }
+    
     public init(_ api: TargetType) {
         baseURL = api.baseURL
         path = api.path
         method = api.method
         task = api.task
         headers = api.headers
+        sampleData = api.sampleData
     }
 }
+
 
 

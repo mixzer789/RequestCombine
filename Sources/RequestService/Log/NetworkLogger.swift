@@ -105,3 +105,29 @@ extension Data {
         return nil
     }
 }
+
+
+
+struct VerbosePlugin: PluginType {
+    let verbose: Bool
+    func prepare(_ request: URLRequest, target: TargetType) -> URLRequest {
+#if DEBUG
+        NetworkLogger.log(request: request)
+#endif
+        return request
+    }
+
+    func didReceive(_ result: Result<Response, MoyaError>, target: TargetType) {
+#if DEBUG
+        switch result {
+            case .success(let body):
+                if verbose {
+                    NetworkLogger.log(response:body.response, data: body)
+                }
+            case .failure( _):
+                break
+        }
+#endif
+    }
+
+}
