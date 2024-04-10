@@ -21,8 +21,8 @@ final class AuthInterceptor: AuthAdapter {
 
     func adapt(_ urlRequest: URLRequest, for session: Session, completion: @escaping (Result<URLRequest, Error>) -> Void) {
         guard urlRequest.url?.absoluteString.hasPrefix("https:") == true,
-              let accessToken = TokenManager.shared.accessToken,
-              let refreshToken =  TokenManager.shared.refreshToken
+              let accessToken = TokenManager.accessToken,
+              let refreshToken =  TokenManager.refreshToken
         else {
             completion(.success(urlRequest))
             return
@@ -49,7 +49,7 @@ final class AuthInterceptor: AuthAdapter {
             }
         } receiveValue: { respone in
             let tokenRespone: TokenRespone = respone
-            TokenManager.shared.accessToken = tokenRespone.acessToken
+            TokenManager.accessToken = tokenRespone.acessToken
             completion(.retry)
         }
         .store(in: &cancellables)

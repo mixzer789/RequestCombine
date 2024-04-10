@@ -10,12 +10,11 @@ import Security
 
 
 public class TokenManager{
-    static let shared = TokenManager()
-
+    
     init(){
     }
 
-    var accessToken: String? {
+    public static var accessToken: String? {
         get {
             return KeychainManager.shared.getToken(forKey: "accessToken") ?? ""
         }
@@ -24,7 +23,7 @@ public class TokenManager{
         }
     }
 
-    var  refreshToken: String? {
+    public static var  refreshToken: String? {
         get {
             return KeychainManager.shared.getToken(forKey: "refreshToken") ?? ""
         }
@@ -33,7 +32,7 @@ public class TokenManager{
         }
     }
 
-    var expiredTimestamp: TimeInterval? {
+    public static var expiredTimestamp: TimeInterval? {
         get {
             return TimeInterval(UserDefaults.standard.double(forKey:"expiredTimestamp"))
         }
