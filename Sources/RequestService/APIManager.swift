@@ -10,9 +10,11 @@ import Combine
 import Moya
 import CombineMoya
 
-public struct APIManager{
+public class APIManager{
+    
+    static let shared = APIManager()
 
-    public init(){
+    init(){
     }
 
     static var cancelable = Set<AnyCancellable>()

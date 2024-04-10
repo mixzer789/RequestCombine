@@ -12,6 +12,9 @@ import Security
 public class TokenManager{
     static let shared = TokenManager()
 
+    init(){
+    }
+
     var accessToken: String? {
         get {
             return KeychainManager.shared.getToken(forKey: "accessToken") ?? ""
@@ -21,7 +24,7 @@ public class TokenManager{
         }
     }
 
-    var refreshToken: String? {
+    var  refreshToken: String? {
         get {
             return KeychainManager.shared.getToken(forKey: "refreshToken") ?? ""
         }
