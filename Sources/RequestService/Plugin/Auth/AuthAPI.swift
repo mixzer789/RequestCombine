@@ -63,9 +63,9 @@ extension AuthAPI: TargetType{
         header["Content-Type"] = "application/json"
         switch self{
             case .user:
-                header["Authorization"] = "Bearer \(TokenManager.shared.accessToken ?? "")"
+                header["Authorization"] = "Bearer \(TokenManager.accessToken ?? "")"
             case .refesh:
-                header["Authorization"] = "Bearer \(TokenManager.shared.accessToken ?? "")"
+                header["Authorization"] = "Bearer \(TokenManager.accessToken ?? "")"
             default:
                 break
         }
