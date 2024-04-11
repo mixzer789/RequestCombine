@@ -39,12 +39,11 @@ public class APIManager{
                             promise(.failure(.init(error:error)))
                     }
                 }, receiveValue: { response in
-                    guard let  result = try? JSONDecoder().decode(BaseRespone<T>.self, from: response.data),
-                          let data = result.data else {
+                    guard let  result = try? JSONDecoder().decode(T.self, from: response.data) else {
                         promise(.failure(.init(type: .undecode)))
                         return
                     }
-                    promise(.success(data))
+                    promise(.success(result))
                 })
                 .store(in: &cancelable)
 
